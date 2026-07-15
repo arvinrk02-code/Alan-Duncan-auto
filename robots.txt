@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alan-duncan-auto.vercel.app/sitemap.xml
+Sitemap: https://alan-duncan-auto-ark99.vercel.app/sitemap.xml

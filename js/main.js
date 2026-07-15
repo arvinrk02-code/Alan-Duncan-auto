@@ -114,7 +114,7 @@
         "&body=" + encodeURIComponent(body);
       window.location.href = href;
       var note = document.querySelector("[data-form-note]");
-      if (note) note.innerHTML = "Opening your email app… if nothing happens, call <a href=\"tel:+441340820655\">01340&nbsp;820655</a> or email us directly.";
+      if (note) note.textContent = "Opening your email app… if nothing happens, call 01340 820655 or email us directly.";
     });
   }
 
