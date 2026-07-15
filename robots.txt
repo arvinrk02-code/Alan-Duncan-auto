@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alan-duncan-auto.vercel.app/sitemap.xml

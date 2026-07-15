@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#211E1A"/>
+  <g stroke="#3A352E" stroke-width="1">
+    <path d="M0 40H1200M0 80H1200M0 120H1200M0 160H1200M0 200H1200M0 240H1200M0 280H1200M0 320H1200M0 360H1200M0 400H1200M0 440H1200M0 480H1200M0 520H1200M0 560H1200M0 600H1200" opacity="0.35"/>
+  </g>
+  <rect x="0" y="620" width="1200" height="10" fill="#F2851E"/>
+  <g transform="translate(90 150)">
+    <rect width="96" height="96" rx="16" fill="#17150F" stroke="#3A352E" stroke-width="2"/>
+    <text x="48" y="62" font-family="Archivo, system-ui, sans-serif" font-size="38" font-weight="800" fill="#F2851E" text-anchor="middle">AD</text>
+  </g>
+  <text x="90" y="330" font-family="Archivo, system-ui, sans-serif" font-size="76" font-weight="800" fill="#ffffff">Alan Duncan</text>
+  <text x="90" y="410" font-family="Archivo, system-ui, sans-serif" font-size="76" font-weight="800" fill="#33B24A">Garage Services</text>
+  <text x="92" y="470" font-family="monospace" font-size="26" fill="#BCB2A0" letter-spacing="2">SERVICING · REPAIRS · MOT · DIAGNOSTICS — DUFFTOWN, MORAY</text>
+  <text x="92" y="545" font-family="Archivo, system-ui, sans-serif" font-size="40" font-weight="700" fill="#E6A23C">01340 820655 · For all your car needs</text>
+</svg>
