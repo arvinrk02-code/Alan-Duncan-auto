@@ -3,122 +3,99 @@
   "use strict";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- mobile nav ---------- */
+  /* ---- mobile nav ---- */
   var burger = document.querySelector(".burger");
   var mNav = document.getElementById("m-nav");
   if (burger && mNav) {
-    var setOpen = function (open) {
-      burger.setAttribute("aria-expanded", String(open));
-      mNav.hidden = !open;
-    };
-    burger.addEventListener("click", function () {
-      setOpen(burger.getAttribute("aria-expanded") !== "true");
-    });
+    var setOpen = function (o) { burger.setAttribute("aria-expanded", String(o)); mNav.hidden = !o; };
+    burger.addEventListener("click", function () { setOpen(burger.getAttribute("aria-expanded") !== "true"); });
     mNav.addEventListener("click", function (e) { if (e.target.tagName === "A") setOpen(false); });
   }
 
-  /* ---------- footer year ---------- */
+  /* ---- footer year ---- */
   var y = document.querySelector("[data-year]");
   if (y) y.textContent = new Date().getFullYear();
 
-  /* ---------- gauge tick marks (progressive polish) ---------- */
-  var ticks = document.querySelector(".g-ticks");
-  if (ticks) {
-    var cx = 160, cy = 132, r0 = 104, r1 = 116, N = 11;
-    var ns = "http://www.w3.org/2000/svg", frag = "";
-    for (var i = 0; i <= N; i++) {
-      var a = Math.PI * (1 - i / N);            // 180° → 0°
-      var x0 = cx + r0 * Math.cos(a), y0 = cy - r0 * Math.sin(a);
-      var x1 = cx + r1 * Math.cos(a), y1 = cy - r1 * Math.sin(a);
-      frag += '<line x1="' + x0.toFixed(1) + '" y1="' + y0.toFixed(1) + '" x2="' + x1.toFixed(1) + '" y2="' + y1.toFixed(1) + '"/>';
-    }
-    ticks.innerHTML = frag;
-    void ns;
-  }
-
-  /* ---------- ignition readout ---------- */
-  var readout = document.querySelector("[data-readout]");
-  if (readout && !reduce) {
-    readout.textContent = "CHECKING…";
-    readout.style.color = "var(--amber)";
-    setTimeout(function () {
-      readout.textContent = "SYSTEMS OK";
-      readout.style.color = "var(--green)";
-    }, 1500);
-  }
-
-  /* ---------- scroll reveal (enhances an already-visible default) ---------- */
-  var targets = document.querySelectorAll(".svc, .rev, .cars-panel, .sec-head, .dash");
+  /* ---- scroll reveal (enhances an already-visible default) ---- */
+  var targets = document.querySelectorAll(".svc, .rev, .band-copy, .find-card, .map-wrap, .sec-head");
   if (!reduce && "IntersectionObserver" in window) {
     targets.forEach(function (el) { el.classList.add("reveal"); });
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
-      });
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
     }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
     targets.forEach(function (el) { io.observe(el); });
   }
 
-  /* ---------- spark-plug easter egg ---------- */
-  var plug = document.querySelector("[data-plug]");
-  if (plug) {
-    var clicks = 0;
-    plug.addEventListener("click", function () {
-      clicks++;
-      if (!reduce) sparkBurst(plug);
-      plug.animate(
-        [{ transform: "rotate(-8deg) scale(1)" }, { transform: "rotate(-8deg) scale(1.18)" }, { transform: "rotate(-8deg) scale(1)" }],
-        { duration: 260, easing: "cubic-bezier(0.25,1,0.5,1)" }
-      );
-      if (clicks === 5) console.log("%c⚡ Firing on all cylinders. Nice one.", "color:#F2851E;font-weight:bold");
-    });
+  /* ---- tiny toast ---- */
+  var toastEl;
+  function toast(msg) {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.setAttribute("role", "status");
+      toastEl.style.cssText = "position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);" +
+        "background:#17150F;color:#FCF8F0;font:700 15px/1.2 Archivo,system-ui,sans-serif;padding:12px 20px;" +
+        "border-radius:9999px;border:2.5px solid #F2851E;box-shadow:0 14px 40px -14px rgba(0,0,0,.5);z-index:200;" +
+        "opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;max-width:90vw;text-align:center;";
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    requestAnimationFrame(function () { toastEl.style.opacity = "1"; toastEl.style.transform = "translateX(-50%) translateY(0)"; });
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toastEl.style.opacity = "0"; toastEl.style.transform = "translateX(-50%) translateY(20px)"; }, 2200);
   }
+
+  /* ---- spark burst from an element ---- */
   function sparkBurst(el) {
-    var host = el.parentElement; // section (position: relative)
-    var er = el.getBoundingClientRect(), hr = host.getBoundingClientRect();
-    var cx = er.left - hr.left + er.width / 2, cy = er.top - hr.top + er.height / 2;
-    for (var i = 0; i < 9; i++) {
+    if (reduce) return;
+    var r = el.getBoundingClientRect();
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    for (var i = 0; i < 14; i++) {
       var s = document.createElement("span");
       s.className = "spark-dot";
-      var ang = (Math.PI * 2 * i) / 9 + Math.random() * 0.4;
-      var dist = 26 + Math.random() * 26;
-      s.style.cssText =
-        "position:absolute;left:" + cx + "px;top:" + cy + "px;width:3px;height:3px;border-radius:9999px;" +
-        "background:" + (i % 2 ? "#E6A23C" : "#F2851E") + ";pointer-events:none;z-index:3;box-shadow:0 0 6px #E6A23C;";
-      host.appendChild(s);
+      var size = 3 + Math.random() * 4;
+      var ang = (Math.PI * 2 * i) / 14 + Math.random() * 0.5;
+      var dist = 34 + Math.random() * 46;
+      s.style.cssText = "left:" + cx + "px;top:" + cy + "px;width:" + size + "px;height:" + size + "px;" +
+        "background:" + (i % 3 ? "#F2851E" : "#34B24A") + ";box-shadow:0 0 8px #F2851E;position:fixed;";
+      document.body.appendChild(s);
       s.animate(
-        [
-          { transform: "translate(-50%,-50%) translate(0,0) scale(1)", opacity: 1 },
-          { transform: "translate(-50%,-50%) translate(" + Math.cos(ang) * dist + "px," + Math.sin(ang) * dist + "px) scale(0)", opacity: 0 }
-        ],
-        { duration: 460 + Math.random() * 160, easing: "cubic-bezier(0.25,1,0.5,1)" }
+        [{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
+         { transform: "translate(-50%,-50%) translate(" + Math.cos(ang) * dist + "px," + (Math.sin(ang) * dist + 24) + "px) scale(0)", opacity: 0 }],
+        { duration: 520 + Math.random() * 240, easing: "cubic-bezier(.2,.8,.2,1)" }
       ).onfinish = function () { this.effect.target.remove(); };
     }
   }
 
-  /* ---------- enquiry form → email (no backend needed) ---------- */
-  var form = document.querySelector("[data-enquiry]");
-  if (form) {
-    form.addEventListener("submit", function (e) {
+  /* ---- spark-plug easter egg (logo badge + footer button) ---- */
+  var lines = ["Vroom — firing on all cylinders.", "Spark's away! ⚡", "That's the good stuff.", "Ready to roll."];
+  var n = 0;
+  document.querySelectorAll("[data-plug]").forEach(function (plug) {
+    plug.style.cursor = "pointer";
+    plug.addEventListener("click", function (e) {
       e.preventDefault();
-      if (!form.checkValidity()) { form.reportValidity(); return; }
-      var get = function (n) { var el = form.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ""; };
-      var name = get("name"), contact = get("contact"), reg = get("reg"), msg = get("message");
-      var body =
-        "Name: " + name + "\n" +
-        "Phone/email: " + contact + "\n" +
-        (reg ? "Car reg: " + reg + "\n" : "") +
-        "\n" + msg + "\n";
-      var href = "mailto:alanduncangarageservices@gmail.com" +
-        "?subject=" + encodeURIComponent("Website enquiry — " + (name || "new customer")) +
-        "&body=" + encodeURIComponent(body);
-      window.location.href = href;
-      var note = document.querySelector("[data-form-note]");
-      if (note) note.textContent = "Opening your email app… if nothing happens, call 01340 820655 or email us directly.";
+      sparkBurst(plug);
+      toast(lines[n % lines.length]); n++;
+      var glyph = plug.querySelector(".plug") || plug;
+      if (!reduce) glyph.animate(
+        [{ transform: "rotate(0) scale(1)" }, { transform: "rotate(-16deg) scale(1.2)" }, { transform: "rotate(0) scale(1)" }],
+        { duration: 320, easing: "cubic-bezier(.2,.8,.2,1)" });
     });
-  }
+  });
 
-  /* ---------- console hello ---------- */
-  console.log("%cAlan Duncan Garage Services", "font:700 16px system-ui;color:#33B24A");
-  console.log("%cFor all your car needs · Dufftown · 01340 820655", "color:#E6A23C");
+  /* ---- Konami code → the horn ---- */
+  var seq = [38,38,40,40,37,39,37,39,66,65], pos = 0;
+  window.addEventListener("keydown", function (e) {
+    pos = (e.keyCode === seq[pos]) ? pos + 1 : (e.keyCode === seq[0] ? 1 : 0);
+    if (pos === seq.length) {
+      pos = 0;
+      toast("BEEP BEEP! 🚗 You found the horn.");
+      if (!reduce) document.body.animate(
+        [{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }],
+        { duration: 260, iterations: 2 });
+    }
+  });
+
+  /* ---- console hello ---- */
+  console.log("%cAlan Duncan Garage Services", "font:800 18px Archivo,system-ui;color:#34B24A");
+  console.log("%cFor all your car needs · Dufftown · 01340 820655  (psst — click the spark plug)", "color:#D96A10;font-weight:600");
 })();
